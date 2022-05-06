@@ -2,6 +2,7 @@ from unittest import TestCase
 from All.states_creation import States
 from All.probability_matix_creator import CalcMatrix
 from All.prepare_data import extract
+from All.probability_matrix_creator_timing import CalcMatrixTime
 
 from pathlib import Path
 path = str(Path.home()) + "\\Desktop\\uni\\segundo\\ia\\final_AI\\data\\Data.csv"
@@ -25,13 +26,6 @@ class TestGetProbabilities(TestCase):
         #self.my_function = main_function(path, my_init_state, names_sem)
         self.my_path = path
 
-    # def test_valid_case(self):
-    #     """this test checks if main function returns the correct data types"""
-    #     my_probabilities_action, my_probabilities_no_action = self.my_function
-    #
-    #     print(my_probabilities_no_action)
-    #     print(my_probabilities_action)
-    #     self.assertEqual(my_probabilities_no_action, [0.0, 0.661186848436247, 0.0])
 
     def test_valid_case_matrix_E(self):
         """this test checks if main function returns the correct data types"""
@@ -62,6 +56,29 @@ class TestGetProbabilities(TestCase):
         my_data = extract(self.my_path, len(names_sem))
         print(my_data)
 
+    def test_valid_case_matrix_time_E(self):
+        """this test checks if main function returns the correct data types"""
+        my_data = extract(self.my_path, len(names_sem))
+        my_matrix = CalcMatrixTime(my_data, possible_states, possible_states_final,  names_sem).create_matrix("E")
+        print(" matrix action E ")
+        for row in my_matrix:
+            print(row)
+
+    def test_valid_case_matrix_time_N(self):
+        """this test checks if main function returns the correct data types"""
+        my_data = extract(self.my_path, len(names_sem))
+        my_matrix = CalcMatrixTime(my_data, possible_states, possible_states_final,  names_sem).create_matrix("N")
+        print(" matrix action N")
+        for row in my_matrix:
+            print(row)
+
+    def test_valid_case_matrix_time_W(self):
+        """this test checks if main function returns the correct data types"""
+        my_data = extract(self.my_path, len(names_sem))
+        my_matrix = CalcMatrixTime(my_data, possible_states, possible_states_final,  names_sem).create_matrix("W")
+        print(" matrix action W")
+        for row in my_matrix:
+            print(row)
 
 
 
