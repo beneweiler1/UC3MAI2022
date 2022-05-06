@@ -1,4 +1,4 @@
-from src.main.python.Exceptions_class import MyException
+from All.Exceptions_class import MyException
 class Compatible:
     def __init__(self, data, init_state):
         self.init_state = init_state
