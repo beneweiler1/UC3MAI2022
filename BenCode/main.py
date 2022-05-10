@@ -5,7 +5,7 @@ from pprint import pp
 
 def dayCalc(intervals):
     total = intervals * 20 
-    day = 86400
+    day = 86400.0
     if total < day:
        return 0
     elif total >= day*2:
@@ -13,10 +13,21 @@ def dayCalc(intervals):
     else:
         return 1
 
+def timeCalc(intervals):
+    while intervals >= 86400:
+        intervals = intervals - 86400
+    minu = intervals / 60
+    hour = minu /60
+    return np.floor(hour)
 
 df = pd.read_csv('data.csv', delimiter=';')
 df = df.replace("Low", 0)
 df = df.replace("High",1)
+
+df['i'] = range(1, len(df) + 1)
+df['day'] = df.apply(lambda row: dayCalc(row.i), axis=1)
+df['time'] = df.apply(lambda row: timeCalc(row.i), axis=1)
+print(pd.DataFrame(df))
 
 counter = df.groupby(['G']).size()
 meanCalc = df.groupby(['G']).mean()
@@ -74,9 +85,9 @@ for d in directions:
             indexY += 1
         indexX += 1
     #pp(array, width=1000, depth=2)
-    print(pd.DataFrame(array))
+    #print(pd.DataFrame(array))
 #np.insert(array,x,0)
-np.savetxt("stats.csv", array, delimiter=",")
+#np.savetxt("stats.csv", array, delimiter=",")
 
 #prob = prob.query('G == N')
 
