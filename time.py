@@ -22,6 +22,9 @@ counter = df.groupby(['G']).size()
 meanCalc = df.groupby(['G']).mean()
 
 
+#prob = df.loc(df.iN == 1, df.G == 'W', df.fN ==1)
+
+
 x = np.array([[0, 0, 0], [0, 0, 1],[0, 1, 0],[0, 1, 1],[1, 0, 0],[1, 0, 1],[1, 1, 0],[1, 1, 1]])
 
 #xinital yfinal
