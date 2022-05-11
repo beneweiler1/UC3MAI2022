@@ -27,8 +27,8 @@ class CalcMatrix:
 		while row < self.states_list_len:
 			new_row = [self.states_list[row]]
 			column = 0
-			my_counter = 0
-			my_counter_all = 0
+			# my_counter = 0
+			# my_counter_all = 0
 			# we go through each state ( iteration in columns for each row )
 			# while column < self.number_states - 1:
 			while column < self.states_list_final_len:

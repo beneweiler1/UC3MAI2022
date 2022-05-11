@@ -22,7 +22,7 @@ def timeCalc(intervals):
 
 df = pd.read_csv('data.csv', delimiter=';')
 df = df.replace("Low", 0)
-df = df.replace("High",1)
+df = df.replace("High", 1)
 
 df['i'] = range(1, len(df) + 1)
 df['day'] = df.apply(lambda row: dayCalc(row.i), axis=1)
@@ -31,6 +31,7 @@ df['time'] = df.apply(lambda row: timeCalc(row.i), axis=1)
 
 counter = df.groupby(['G']).size()
 meanCalc = df.groupby(['G']).mean()
+
 
 
 x = np.array([[0, 0, 0], [0, 0, 1],[0, 1, 0],[0, 1, 1],[1, 0, 0],[1, 0, 1],[1, 1, 0],[1, 1, 1]])
@@ -74,16 +75,16 @@ for d in directions:
     #print(d)
     indexX = 1
     for i in x:
-        initial = df.query('iN =='+ str(i[0])+ '& iE ==' + str(i[1])+ '& iW ==' + str(i[2])) #initial north
-        #print('intial states n:'+str(i[0])+' e:'+ str(i[1])+' w:'+str(i[2]))
-        inital = initial.query('G=='+ '"' + str(d)+'"')
-        #counter = initial.groupby(['G']).iN.count()
+        initial = df.query('iN ==' + str(i[0]) + '& iE ==' + str(i[1]) + '& iW ==' + str(i[2]))  # initial north
+        # print('intial states n:'+str(i[0])+' e:'+ str(i[1])+' w:'+str(i[2]))
+        inital = initial.query('G==' + '"' + str(d)+'"')
+        # counter = initial.groupby(['G']).iN.count()
         total = inital.iN.count()
         indexY = 1
         for j in x: 
             final = df.query('iN =='+ str(i[0])+ '& iE ==' + str(i[1])+ '& iW ==' + str(i[2]) + '& fN =='+ str(j[0])+ '& fE ==' + str(j[1])+ '& fW ==' + str(j[2]))
                 #print('final states n:'+str(j[0])+' e:'+ str(j[1])+' w:'+str(j[2]))
-            final = final.query('G=='+ '"' + str(d)+'"')
+            final = final.query('G==' + '"' + str(d)+'"')
             probCond = final.iN.count() / total
             array[indexX][indexY] = probCond
             indexY += 1
