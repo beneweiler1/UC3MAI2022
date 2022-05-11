@@ -27,7 +27,7 @@ df = df.replace("High",1)
 df['i'] = range(1, len(df) + 1)
 df['day'] = df.apply(lambda row: dayCalc(row.i), axis=1)
 df['time'] = df.apply(lambda row: timeCalc(row.i), axis=1)
-print(pd.DataFrame(df))
+#print(pd.DataFrame(df))
 
 counter = df.groupby(['G']).size()
 meanCalc = df.groupby(['G']).mean()
@@ -65,9 +65,13 @@ def makeArray():
 
 directions = ["N","W","E"]
 
+arrN = []
+arrE = []
+arrW = []
+index = 0
 for d in directions:
     array = makeArray()
-    print(d)
+    #print(d)
     indexX = 1
     for i in x:
         initial = df.query('iN =='+ str(i[0])+ '& iE ==' + str(i[1])+ '& iW ==' + str(i[2])) #initial north
@@ -85,9 +89,57 @@ for d in directions:
             indexY += 1
         indexX += 1
     #pp(array, width=1000, depth=2)
+    if index == 0:
+        arrN = array
+    if index == 1:
+        arrW = array
+    if index == 2:
+        arrE = array
+    index += 1
     #print(pd.DataFrame(array))
 #np.insert(array,x,0)
 #np.savetxt("stats.csv", array, delimiter=",")
+
+#print(pd.DataFrame(arrN))
+# print(arrN[2])
+# for i in (arrN[2]):
+#     print(i)
+
+#print(pd.DataFrame(arrN))
+# print(pd.DataFrame(arrW))
+
+
+def dirCalc(arrD, values, value, costD):
+    sum =0
+    for i in range (1, len(arrD[value])):
+        #print('i:',arrD[value][i], 'val:',values[i-1])
+        sum += arrD[value][i]*values[i-1]
+    return sum + costD    
+
+def generalAlg(arrN, arrE, arrW, Di):
+    tol = 0.01
+    values = np.zeros(8)
+    #values[] = 1
+    #print(dirCalc(arrN,values,2,0))
+    maxi = 450
+    for p in range(0,maxi):
+        for x in range (2,9):
+            values[x-1] = min(dirCalc(arrN,values,x,1),dirCalc(arrE,values,x,1),dirCalc(arrW,values,x,1))
+            if p == maxi - 1:
+                N = dirCalc(arrN,values,x,1)
+                E = dirCalc(arrE,values,x,1)
+                W = dirCalc(arrW,values,x,1)
+                if N < E and N < W:
+                    print('value:', x-1, 'N')
+                elif E < N and E < W:
+                    print('value:', x-1, 'E')
+                else:
+                    print('value:', x-1, 'W')
+        if (p%100 == 1):
+            print(values)
+    #print(values)
+
+generalAlg(arrN, arrE, arrW, 0)
 
 #prob = prob.query('G == N')
 
