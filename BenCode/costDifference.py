@@ -110,39 +110,71 @@ for d in directions:
 # print(pd.DataFrame(arrW))
 
 
-def dirCalc(arrD, values, value):
+def dirCalc(arrD, values, value, orginalD, costChange):
     sum =0
     for i in range (1, len(arrD[value])):
         #print('i:',arrD[value][i], 'val:',values[i-1])
         sum += arrD[value][i]*values[i-1]
-    return sum + 1
+    if orginalD == 1:
+        return sum + 1 
+    else:
+        return sum + costChange
 
-def generalAlg(arrN, arrE, arrW):
-    #direction 0 = North, 1 = East, 2 = W
+
+def generalAlg(arrN, arrE, arrW, Di, costChange):
+    #direction 0 = North, 1 = East, 2 = West
     values = np.zeros(8)
-    optimalDir = np.zeros(8)
-    #values[] = 1
-    #print(dirCalc(arrN,values,2,0))
+    optimalDirections = np.zeros(8)
     maxi = 450
     for p in range(0,maxi):
         for x in range (2,9):
-            
-            values[x-1] = min(dirCalc(arrN,values,x),dirCalc(arrE,values,x),dirCalc(arrW,values,x))
-            if p == maxi - 1:
-                N = dirCalc(arrN,values,x)
-                E = dirCalc(arrE,values,x)
-                W = dirCalc(arrW,values,x)
-                if N < E and N < W:
-                    print('value:', x-1, 'N')
-                elif E < N and E < W:
-                    print('value:', x-1, 'E')
+            if Di == 0: #north:
+                n = dirCalc(arrN,values,x,1,costChange)
+                e = dirCalc(arrE,values,x,0,costChange)
+                w = dirCalc(arrW,values,x,0,costChange)
+                values[x-1] = min(n,e,w)
+                if n > e and n > w:
+                    Di = 0
+                elif e > n and e > w:
+                    Di = 1
                 else:
-                    print('value:', x-1, 'W')
+                    Di = 2
+            if Di == 1: #East:
+                n = dirCalc(arrN,values,x,0,costChange)
+                e = dirCalc(arrE,values,x,1,costChange)
+                w = dirCalc(arrW,values,x,0,costChange)
+                values[x-1] = min(n,e,w)
+                if n > e and n > w:
+                    Di = 0
+                elif e > n and e > w:
+                    Di = 1
+                else:
+                    Di = 2
+            if Di == 2: #West:
+                n = dirCalc(arrN,values,x,0,costChange)
+                e = dirCalc(arrE,values,x,0,costChange)
+                w = dirCalc(arrW,values,x,1,costChange)
+                values[x-1] = min(n,e,w)
+                if n > e and n > w:
+                    Di = 0
+                elif e > n and e > w:
+                    Di = 1
+                else:
+                    Di = 2
+            optimalDirections[x-1] = Di
+            # if p == maxi - 1:
+            #     if N < E and N < W:
+            #         print('value:', x-1, 'N')
+            #     elif E < N and E < W:
+            #         print('value:', x-1, 'E')
+            #     else:
+            #         print('value:', x-1, 'W')
         if (p%100 == 1):
             print(values)
+            print(optimalDirections)
     #print(values)
 
-generalAlg(arrN, arrE, arrW)
+generalAlg(arrN, arrE, arrW, 0, 1)
 
 #prob = prob.query('G == N')
 
