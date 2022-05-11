@@ -1,3 +1,4 @@
+from ast import comprehension
 import csv
 import pandas as pd
 import numpy as np
@@ -27,18 +28,12 @@ df = df.replace("High", 1)
 df['i'] = range(1, len(df) + 1)
 df['day'] = df.apply(lambda row: dayCalc(row.i), axis=1)
 df['time'] = df.apply(lambda row: timeCalc(row.i), axis=1)
-#print(pd.DataFrame(df))
 
 counter = df.groupby(['G']).size()
 meanCalc = df.groupby(['G']).mean()
 
+comboBinary = np.array([[0, 0, 0], [0, 0, 1],[0, 1, 0],[0, 1, 1],[1, 0, 0],[1, 0, 1],[1, 1, 0],[1, 1, 1]])
 
-
-x = np.array([[0, 0, 0], [0, 0, 1],[0, 1, 0],[0, 1, 1],[1, 0, 0],[1, 0, 1],[1, 1, 0],[1, 1, 1]])
-
-#xinital yfinal
-#array = np.append(array,[0,1,2,3,4,5,6,7])
-#print(array)
 indexX = 0
 
 def makeArray():
@@ -74,22 +69,19 @@ for d in directions:
     array = makeArray()
     #print(d)
     indexX = 1
-    for i in x:
+    for i in comboBinary:
         initial = df.query('iN ==' + str(i[0]) + '& iE ==' + str(i[1]) + '& iW ==' + str(i[2]))  # initial north
-        # print('intial states n:'+str(i[0])+' e:'+ str(i[1])+' w:'+str(i[2]))
         inital = initial.query('G==' + '"' + str(d)+'"')
-        # counter = initial.groupby(['G']).iN.count()
         total = inital.iN.count()
         indexY = 1
-        for j in x: 
+        for j in comboBinary: 
             final = df.query('iN =='+ str(i[0])+ '& iE ==' + str(i[1])+ '& iW ==' + str(i[2]) + '& fN =='+ str(j[0])+ '& fE ==' + str(j[1])+ '& fW ==' + str(j[2]))
-                #print('final states n:'+str(j[0])+' e:'+ str(j[1])+' w:'+str(j[2]))
             final = final.query('G==' + '"' + str(d)+'"')
             probCond = final.iN.count() / total
             array[indexX][indexY] = probCond
             indexY += 1
         indexX += 1
-    #pp(array, width=1000, depth=2)
+
     if index == 0:
         arrN = array
     if index == 1:
@@ -97,23 +89,11 @@ for d in directions:
     if index == 2:
         arrE = array
     index += 1
-    #print(pd.DataFrame(array))
-#np.insert(array,x,0)
-#np.savetxt("stats.csv", array, delimiter=",")
-
-#print(pd.DataFrame(arrN))
-# print(arrN[2])
-# for i in (arrN[2]):
-#     print(i)
-
-#print(pd.DataFrame(arrN))
-# print(pd.DataFrame(arrW))
 
 
 def dirCalc(arrD, values, value, orginalD, costChange):
     sum =0
     for i in range (1, len(arrD[value])):
-        #print('i:',arrD[value][i], 'val:',values[i-1])
         sum += arrD[value][i]*values[i-1]
     if orginalD == 1:
         return sum + 1 
@@ -133,9 +113,9 @@ def generalAlg(arrN, arrE, arrW, Di, costChange):
                 e = dirCalc(arrE,values,x,0,costChange)
                 w = dirCalc(arrW,values,x,0,costChange)
                 values[x-1] = min(n,e,w)
-                if n > e and n > w:
+                if n < e and n < w:
                     Di = 0
-                elif e > n and e > w:
+                elif e < n and e < w:
                     Di = 1
                 else:
                     Di = 2
@@ -144,9 +124,9 @@ def generalAlg(arrN, arrE, arrW, Di, costChange):
                 e = dirCalc(arrE,values,x,1,costChange)
                 w = dirCalc(arrW,values,x,0,costChange)
                 values[x-1] = min(n,e,w)
-                if n > e and n > w:
+                if n < e and n < w:
                     Di = 0
-                elif e > n and e > w:
+                elif e < n and e < w:
                     Di = 1
                 else:
                     Di = 2
@@ -155,37 +135,28 @@ def generalAlg(arrN, arrE, arrW, Di, costChange):
                 e = dirCalc(arrE,values,x,0,costChange)
                 w = dirCalc(arrW,values,x,1,costChange)
                 values[x-1] = min(n,e,w)
-                if n > e and n > w:
+                if n < e and n < w:
                     Di = 0
-                elif e > n and e > w:
+                elif e < n and e < w:
                     Di = 1
                 else:
                     Di = 2
             optimalDirections[x-1] = Di
-            # if p == maxi - 1:
-            #     if N < E and N < W:
-            #         print('value:', x-1, 'N')
-            #     elif E < N and E < W:
-            #         print('value:', x-1, 'E')
-            #     else:
-            #         print('value:', x-1, 'W')
+
         if (p%100 == 1):
             print(values)
-            print(optimalDirections)
-    #print(values)
+    for x in range(1,len(comboBinary)):
+        if optimalDirections[x] == 0:
+            print(comboBinary[x],': N')
+        elif optimalDirections[x] == 1:
+            print(comboBinary[x],': E')
+        else:
+            print(comboBinary[x], ': W')
 
-generalAlg(arrN, arrE, arrW, 0, 1)
 
-#prob = prob.query('G == N')
 
-# prob = prob.query('fN == 0')
-# prob = prob.query('fE == 0')
-# prob = prob.query('fW == 0')
-#prob = prob.query('G')
-#print(prob.groupby(['G']).count())
-#print(prob.G.count())
-#print(meanCalc)
-#print(meanCalc)
+originState = 1 #0=north, 1 = east, 2 = west
+costToChange = 1
 
-#probability of (iD, D, fD) for all states
-#df.groupby(['G']) where iD = D is (1,2) and fD = D (1,2)
+
+generalAlg(arrN, arrE, arrW, originState, costToChange)
