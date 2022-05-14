@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 from pprint import pp
 
-def dayCalc(intervals):
+def dayCalc(intervals): #not important unless we are organizing by time
     total = intervals * 20 
     day = 86400.0
     if total < day:
@@ -14,7 +14,7 @@ def dayCalc(intervals):
     else:
         return 1
 
-def timeCalc(intervals):
+def timeCalc(intervals): #not important unless we are organizing by time
     while intervals >= 86400:
         intervals = intervals - 86400
     minu = intervals / 60
@@ -36,7 +36,7 @@ comboBinary = np.array([[0, 0, 0], [0, 0, 1],[0, 1, 0],[0, 1, 1],[1, 0, 0],[1, 0
 
 indexX = 0
 
-def makeArray():
+def makeArray(): #makes array x and y coordinates
     array = np.zeros((9,9))
     array[0][0] = 0
     array[0][1] = 0
@@ -69,12 +69,12 @@ for d in directions:
     array = makeArray()
     #print(d)
     indexX = 1
-    for i in comboBinary:
-        initial = df.query('iN ==' + str(i[0]) + '& iE ==' + str(i[1]) + '& iW ==' + str(i[2]))  # initial north
-        inital = initial.query('G==' + '"' + str(d)+'"')
-        total = inital.iN.count()
+    for i in comboBinary: #iterate through traffic patterns
+        initial = df.query('iN ==' + str(i[0]) + '& iE ==' + str(i[1]) + '& iW ==' + str(i[2]))  #query to get initial traffic
+        inital = initial.query('G==' + '"' + str(d)+'"') #query to get designated traffic light on
+        total = inital.iN.count() #sum of all values within query
         indexY = 1
-        for j in comboBinary: 
+        for j in comboBinary: #iterate through traffic for each final state
             final = df.query('iN =='+ str(i[0])+ '& iE ==' + str(i[1])+ '& iW ==' + str(i[2]) + '& fN =='+ str(j[0])+ '& fE ==' + str(j[1])+ '& fW ==' + str(j[2]))
             final = final.query('G==' + '"' + str(d)+'"')
             probCond = final.iN.count() / total
@@ -83,11 +83,11 @@ for d in directions:
         indexX += 1
 
     if index == 0:
-        arrN = array
+        arrN = array #north iteration
     if index == 1:
-        arrW = array
+        arrW = array #west iteration
     if index == 2:
-        arrE = array
+        arrE = array #east iteration
     index += 1
 
 
@@ -108,18 +108,18 @@ def generalAlg(arrN, arrE, arrW, Di, costChange):
     maxi = 450
     for p in range(0,maxi):
         for x in range (2,9):
-            if Di == 0: #north:
+            if Di == 0: #previous location is north:
                 n = dirCalc(arrN,values,x,1,costChange)
                 e = dirCalc(arrE,values,x,0,costChange)
                 w = dirCalc(arrW,values,x,0,costChange)
                 values[x-1] = min(n,e,w)
-                if n < e and n < w:
+                if n < e and n < w: #set previous direction to north
                     Di = 0
-                elif e < n and e < w:
+                elif e < n and e < w: #set previos direction to east 
                     Di = 1
-                else:
+                else: #set previous location to west
                     Di = 2
-            if Di == 1: #East:
+            if Di == 1: #previous location is East:
                 n = dirCalc(arrN,values,x,0,costChange)
                 e = dirCalc(arrE,values,x,1,costChange)
                 w = dirCalc(arrW,values,x,0,costChange)
@@ -130,7 +130,7 @@ def generalAlg(arrN, arrE, arrW, Di, costChange):
                     Di = 1
                 else:
                     Di = 2
-            if Di == 2: #West:
+            if Di == 2: #previous location is West:
                 n = dirCalc(arrN,values,x,0,costChange)
                 e = dirCalc(arrE,values,x,0,costChange)
                 w = dirCalc(arrW,values,x,1,costChange)
@@ -144,6 +144,7 @@ def generalAlg(arrN, arrE, arrW, Di, costChange):
             optimalDirections[x-1] = Di
 
         if (p%100 == 1):
+            #print(pd.DataFrame(values))
             print(values)
     for x in range(1,len(comboBinary)):
         if optimalDirections[x] == 0:
@@ -156,7 +157,8 @@ def generalAlg(arrN, arrE, arrW, Di, costChange):
 
 
 originState = 1 #0=north, 1 = east, 2 = west
-costToChange = 1
+costToChange = 1 #change this value to manipulate cost to change traffic light color 
+
 
 
 generalAlg(arrN, arrE, arrW, originState, costToChange)
