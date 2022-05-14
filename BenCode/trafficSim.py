@@ -1,31 +1,12 @@
 import pandas as pd
 import numpy as np
 from pprint import pp
-
-def dayCalc(intervals): #not important unless we are organizing by time
-    total = intervals * 20 
-    day = 86400.0
-    if total < day:
-       return 0
-    elif total >= day*2:
-        return 2
-    else:
-        return 1
-
-def timeCalc(intervals): #not important unless we are organizing by time
-    while intervals >= 86400:
-        intervals = intervals - 86400
-    minu = intervals / 60
-    hour = minu /60
-    return np.floor(hour)
+import random
 
 df = pd.read_csv('data.csv', delimiter=';')
 df = df.replace("Low", 0)
 df = df.replace("High", 1)
 
-df['i'] = range(1, len(df) + 1)
-df['day'] = df.apply(lambda row: dayCalc(row.i), axis=1)
-df['time'] = df.apply(lambda row: timeCalc(row.i), axis=1)
 
 counter = df.groupby(['G']).size()
 meanCalc = df.groupby(['G']).mean()
@@ -101,8 +82,8 @@ def dirCalc(arrD, values, col, orginalD, costChange):
 
 def generalAlg(arrN, arrE, arrW, Di, costChange):
     #direction 0 = North, 1 = East, 2 = West
-    values = np.zeros(8)
     optimalDirections = np.zeros(8)
+    values = np.zeros(8)
     maxi = 450
     for p in range(0,maxi):
         for x in range (2,9):
@@ -140,20 +121,22 @@ def generalAlg(arrN, arrE, arrW, Di, costChange):
                 else:
                     Di = 2
             optimalDirections[x-1] = Di
+    return optimalDirections
 
-        if (p%100 == 1):
-            #print(pd.DataFrame(values))
-            for x in range (1, len(values)):
-                print(comboBinary[x],': ',values[x])
-            print(values)
+        # if (p%100 == 1):
+        #     #print(pd.DataFrame(values))
+        #     for x in range (1, len(values)):
+        #         print(comboBinary[x],': ',values[x])
+        #     print(values)
 
-    for x in range(1,len(comboBinary)):
-        if optimalDirections[x] == 0:
-            print(comboBinary[x],': N')
-        elif optimalDirections[x] == 1:
-            print(comboBinary[x],': E')
-        else:
-            print(comboBinary[x], ': W')
+    # for x in range(1,len(comboBinary)):
+    #     if optimalDirections[x] == 0:
+    #         print(comboBinary[x],': N')
+    #     elif optimalDirections[x] == 1:
+    #         print(comboBinary[x],': E')
+    #     else:
+    #         print(comboBinary[x], ': W')
+
 
 
 
@@ -161,5 +144,50 @@ originState = 0 #0=north, 1 = east, 2 = west
 costToChange = 1.5 #change this value to manipulate cost to change traffic light color 
 
 
+dir = generalAlg(arrN, arrE, arrW, originState, costToChange)
 
-generalAlg(arrN, arrE, arrW, originState, costToChange)
+# for x in range(1,len(dir)):
+#     if dir[x] == 0:
+#         print(comboBinary[x],': N')
+#     elif dir[x] == 1:
+#         print(comboBinary[x],': E')
+#     else:
+#         print(comboBinary[x], ': W')
+
+def simulator(previousState, goalState):
+    print(comboBinary[previousState], comboBinary[goalState])
+
+    light = dir[previousState]
+    r = random.random()
+    print(r)
+    sum = 0
+
+    if previousState == goalState:
+        print('made it')
+        return
+    
+    if light == 0: #north
+        col = arrN[previousState+1]
+        for x in range(1,len(col)-1):
+           sum += col[x]
+           if sum >= r:
+               simulator(x,goalState)
+
+
+    elif light == 1: #east
+        col = arrE[previousState+1]
+        for x in range(1,len(col)-1):
+            sum += col[x]
+            if sum >= r:
+               simulator(x,goalState)
+
+    else: #west
+        col = arrW[previousState+1]  
+        for x in range(1,len(col)-1):
+            sum += col[x]
+            if sum >= r:
+               simulator(x,goalState)   
+#print(pd.DataFrame(arrE))
+# print(dir)
+
+simulator(3,0)

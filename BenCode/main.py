@@ -33,8 +33,7 @@ counter = df.groupby(['G']).size()
 meanCalc = df.groupby(['G']).mean()
 
 
-
-x = np.array([[0, 0, 0], [0, 0, 1],[0, 1, 0],[0, 1, 1],[1, 0, 0],[1, 0, 1],[1, 1, 0],[1, 1, 1]])
+trafficPatterns = np.array([[0, 0, 0], [0, 0, 1],[0, 1, 0],[0, 1, 1],[1, 0, 0],[1, 0, 1],[1, 1, 0],[1, 1, 1]]) #N E W
 
 #xinital yfinal
 #array = np.append(array,[0,1,2,3,4,5,6,7])
@@ -69,19 +68,21 @@ directions = ["N","W","E"]
 arrN = []
 arrE = []
 arrW = []
+
 index = 0
 for d in directions:
     array = makeArray()
     #print(d)
     indexX = 1
-    for i in x:
+    for i in trafficPatterns:
         initial = df.query('iN ==' + str(i[0]) + '& iE ==' + str(i[1]) + '& iW ==' + str(i[2]))  # initial north
         # print('intial states n:'+str(i[0])+' e:'+ str(i[1])+' w:'+str(i[2]))
         inital = initial.query('G==' + '"' + str(d)+'"')
         # counter = initial.groupby(['G']).iN.count()
         total = inital.iN.count()
+
         indexY = 1
-        for j in x: 
+        for j in trafficPatterns: 
             final = df.query('iN =='+ str(i[0])+ '& iE ==' + str(i[1])+ '& iW ==' + str(i[2]) + '& fN =='+ str(j[0])+ '& fE ==' + str(j[1])+ '& fW ==' + str(j[2]))
                 #print('final states n:'+str(j[0])+' e:'+ str(j[1])+' w:'+str(j[2]))
             final = final.query('G==' + '"' + str(d)+'"')
@@ -105,13 +106,15 @@ for d in directions:
 # print(arrN[2])
 # for i in (arrN[2]):
 #     print(i)
-
-#print(pd.DataFrame(arrN))
-# print(pd.DataFrame(arrW))
-
+print('N')
+print(pd.DataFrame(arrN))
+print('W')
+print(pd.DataFrame(arrW))
+print('E')
+print(pd.DataFrame(arrE))
 
 def dirCalc(arrD, values, value):
-    sum =0
+    sum = 0
     for i in range (1, len(arrD[value])):
         #print('i:',arrD[value][i], 'val:',values[i-1])
         sum += arrD[value][i]*values[i-1]
@@ -120,10 +123,10 @@ def dirCalc(arrD, values, value):
 def generalAlg(arrN, arrE, arrW):
     #direction 0 = North, 1 = East, 2 = W
     values = np.zeros(8)
-    optimalDir = np.zeros(8)
+
     #values[] = 1
     #print(dirCalc(arrN,values,2,0))
-    maxi = 450
+    maxi = 500
     for p in range(0,maxi):
         for x in range (2,9):
             
