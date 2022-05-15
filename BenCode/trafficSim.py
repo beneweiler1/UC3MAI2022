@@ -145,6 +145,7 @@ costToChange = 1.5 #change this value to manipulate cost to change traffic light
 
 
 dir = generalAlg(arrN, arrE, arrW, originState, costToChange)
+print(dir)
 
 # for x in range(1,len(dir)):
 #     if dir[x] == 0:
@@ -168,25 +169,37 @@ def simulator(previousState, goalState):
     
     if light == 0: #north
         col = arrN[previousState+1]
+<<<<<<< HEAD
         for x in range(0,len(col)-1):
+=======
+        for x in range(0, len(col)-1):
+>>>>>>> eefd5bc1df80af52d83f2788e7edc7c39a9118cd
            sum += col[x+1]
            if sum >= r:
-               simulator(x,goalState)
+               simulator(x, goalState)
 
     elif light == 1: #east
         col = arrE[previousState+1]
+<<<<<<< HEAD
         for x in range(0,len(col)-1):
+=======
+        for x in range(0, len(col)-1):
+>>>>>>> eefd5bc1df80af52d83f2788e7edc7c39a9118cd
             sum += col[x+1]
             if sum >= r:
-               simulator(x,goalState)
+               simulator(x, goalState)
 
     else: #west
         col = arrW[previousState+1]  
+<<<<<<< HEAD
         for x in range(0,len(col)-1):
+=======
+        for x in range(0, len(col)-1):
+>>>>>>> eefd5bc1df80af52d83f2788e7edc7c39a9118cd
             sum += col[x+1]
             if sum >= r:
-               simulator(x,goalState)   
-#print(pd.DataFrame(arrE))
+               simulator(x, goalState)
+ print(pd.DataFrame(arrE))
 # print(dir)
 
 simulator(3,0)

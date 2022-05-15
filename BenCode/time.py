@@ -74,7 +74,7 @@ for t in hour:
         indexX = 1
         for i in trafficCombo:
             initial = df.query('iN =='+ str(i[0])+ '& iE ==' + str(i[1])+ '& iW ==' + str(i[2])) #initial north
-            #print('intial states n:'+str(i[0])+' e:'+ str(i[1])+' w:'+str(i[2]))
+            #print('intial states_no_final n:'+str(i[0])+' e:'+ str(i[1])+' w:'+str(i[2]))
             initial = initial.query('day ==' +str(setDate))
             initial = initial.query('time ==' +str(t))
             initial = initial.query('G=='+ '"' + str(d)+'"')
@@ -82,7 +82,7 @@ for t in hour:
             indexY = 1
             for j in trafficCombo: 
                 final = df.query('iN =='+ str(i[0])+ '& iE ==' + str(i[1])+ '& iW ==' + str(i[2]) + '& fN =='+ str(j[0])+ '& fE ==' + str(j[1])+ '& fW ==' + str(j[2]))
-                #print('final states n:'+str(j[0])+' e:'+ str(j[1])+' w:'+str(j[2]))
+                #print('final states_no_final n:'+str(j[0])+' e:'+ str(j[1])+' w:'+str(j[2]))
                 final = final.query('day ==' +str(setDate))
                 final = final.query('time ==' +str(t))
                 final = final.query('G=='+ '"' + str(d)+'"')
@@ -105,5 +105,5 @@ for t in hour:
 #print(meanCalc)
 #print(meanCalc)
 
-#probability of (iD, D, fD) for all states
+#probability of (iD, D, fD) for all states_no_final
 #df.groupby(['G']) where iD = D is (1,2) and fD = D (1,2)

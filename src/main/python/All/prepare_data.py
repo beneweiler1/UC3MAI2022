@@ -2,7 +2,6 @@ import csv
 
 
 def extract(path, num_dir):
-    ##########################################################################################
     # obtaining data for our probabilities
     with open(path) as csvfile:
         reader = csv.reader(csvfile, delimiter=';')
