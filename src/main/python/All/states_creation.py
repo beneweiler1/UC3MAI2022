@@ -3,7 +3,7 @@ from src.main.python.All.Exceptions_class import MyException
 class States:
 
     def __init__(self, in_list: list):
-        # input must be a list with the initial states in order
+        # input must be a list with the initial states_no_final in order
         self.directions = self.validate_directions(in_list)
         self.len = len(in_list)
 

@@ -30,7 +30,7 @@ df['time'] = df.apply(lambda row: timeCalc(row.i), axis=1)
 counter = df.groupby(['G']).size()
 meanCalc = df.groupby(['G']).mean()
 
-comboBinary = np.array([[0, 0, 0], [0, 0, 1],[0, 1, 0],[0, 1, 1],[1, 0, 0],[1, 0, 1],[1, 1, 0],[1, 1, 1]])
+comboBinary = np.array([[0, 0, 0], [0, 0, 1], [0, 1, 0], [0, 1, 1], [1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1]])
 
 indexX = 0
 
@@ -56,46 +56,49 @@ def makeArray(): #makes array x and y coordinates
     array[7][0] = 110
     array[8][0] = 111
     return array
+def array_maker():
+    directions = ["N","W","E"]
 
-directions = ["N","W","E"]
+    arrN = []
+    arrE = []
+    arrW = []
+    index = 0
+    for d in directions:
+        array = makeArray()
+        #print(d)
+        indexX = 1
+        for i in comboBinary: #iterate through traffic patterns
+            initial = df.query('iN ==' + str(i[0]) + '& iE ==' + str(i[1]) + '& iW ==' + str(i[2]))  #query to get initial traffic
+            inital = initial.query('G==' + '"' + str(d)+'"') #query to get designated traffic light on
+            total = inital.iN.count() #sum of all values within query
+            indexY = 1
+            for j in comboBinary: #iterate through traffic for each final state
+                final = df.query('iN ==' + str(i[0]) + '& iE ==' + str(i[1])+ '& iW ==' + str(i[2]) + '& fN ==' + str(j[0])
+                                 + '& fE ==' + str(j[1]) + '& fW ==' + str(j[2]))
+                final = final.query('G==' + '"' + str(d)+'"')
+                probCond = final.iN.count() / total
+                array[indexX][indexY] = probCond
+                indexY += 1
+            indexX += 1
 
-arrN = []
-arrE = []
-arrW = []
-index = 0
-for d in directions:
-    array = makeArray()
-    #print(d)
-    indexX = 1
-    for i in comboBinary: #iterate through traffic patterns
-        initial = df.query('iN ==' + str(i[0]) + '& iE ==' + str(i[1]) + '& iW ==' + str(i[2]))  #query to get initial traffic
-        inital = initial.query('G==' + '"' + str(d)+'"') #query to get designated traffic light on
-        total = inital.iN.count() #sum of all values within query
-        indexY = 1
-        for j in comboBinary: #iterate through traffic for each final state
-            final = df.query('iN =='+ str(i[0])+ '& iE ==' + str(i[1])+ '& iW ==' + str(i[2]) + '& fN =='+ str(j[0])+ '& fE ==' + str(j[1])+ '& fW ==' + str(j[2]))
-            final = final.query('G==' + '"' + str(d)+'"')
-            probCond = final.iN.count() / total
-            array[indexX][indexY] = probCond
-            indexY += 1
-        indexX += 1
-
-    if index == 0:
-        arrN = array #north iteration
-    if index == 1:
-        arrW = array #west iteration
-    if index == 2:
-        arrE = array #east iteration
-    index += 1
+        if index == 0:
+            arrN = array  # north iteration
+        if index == 1:
+            arrW = array  # west iteration
+        if index == 2:
+            arrE = array  # east iteration
+        index += 1
+    return arrN, arrW, arrE
 
 
 def dirCalc(arrD, values, col, orginalD, costChange):
     sum =0
-    for i in range (1, len(arrD[col])):
-        sum += arrD[col][i]*values[i-1]  #selects col, iterates through all row values in row and multiplies by its designated weight in values array
-    if orginalD == 1: #not changing traffic light N-N or E-E or W-W
+    for i in range(1, len(arrD[col])):
+        sum += arrD[col][i]*values[i-1]  # selects col, iterates through all row values in row and multiplies by
+                                         # its designated weight in values array
+    if orginalD == 1:  # not changing traffic light N-N or E-E or W-W
         return sum + 1 
-    else: #changing traffic light ex. N-E, or E-W or N-W....
+    else:  # changing traffic light ex. N-E, or E-W or N-W....
         return sum + costChange
 
 
@@ -143,23 +146,33 @@ def generalAlg(arrN, arrE, arrW, Di, costChange):
 
         if (p%100 == 1):
             #print(pd.DataFrame(values))
-            for x in range (1, len(values)):
-                print(comboBinary[x],': ',values[x])
-            print(values)
-
-    for x in range(1,len(comboBinary)):
+            for x in range(1, len(values)):
+                a = 1
+                # print(comboBinary[x],': ',values[x])
+            # print(values)
+    my_optimal_policy = []
+    my_optimal_policy_dic = {}
+    for x in range(1, len(comboBinary)):
         if optimalDirections[x] == 0:
-            print(comboBinary[x],': N')
+            # print(comboBinary[x],': N')
+            my_optimal_policy.append(str(comboBinary[x]) + ': N')
+            my_optimal_policy_dic[str(comboBinary[x])] = "N"
         elif optimalDirections[x] == 1:
-            print(comboBinary[x],': E')
+            # print(comboBinary[x],': E')
+            my_optimal_policy.append(str(comboBinary[x]) + ': E')
+            my_optimal_policy_dic[str(comboBinary[x])] = "E"
         else:
-            print(comboBinary[x], ': W')
+            # print(comboBinary[x], ': W')
+            my_optimal_policy.append(str(comboBinary[x]) + ': W')
+            my_optimal_policy_dic[str(comboBinary[x])] = "W"
+        # print(my_optimal_policy)
 
+    return my_optimal_policy_dic
 
+def main_function(originState, costToChange):
 
-originState = 0 #0=north, 1 = east, 2 = west
-costToChange = 1.5 #change this value to manipulate cost to change traffic light color 
-
-
-
-generalAlg(arrN, arrE, arrW, originState, costToChange)
+    # originState = 0 #0=north, 1 = east, 2 = west
+    # costToChange = 1.5 #change this value to manipulate cost to change traffic light color
+    arrN, arrW, arrE = array_maker()
+    optimal_policy  = generalAlg(arrN, arrE, arrW, originState, costToChange)
+    return optimal_policy

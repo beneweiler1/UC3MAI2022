@@ -20,7 +20,7 @@ class CalcMatrix:
 		# while row < self.number_states:
 		column1 = 0
 		first_row = ["Initial state"]
-		while column1 < self.states_list_len:
+		while column1 < self.states_list_len + 1:
 			first_row.append(self.states_list_final[column1])
 			column1 += 1
 		my_matrix.append(first_row)

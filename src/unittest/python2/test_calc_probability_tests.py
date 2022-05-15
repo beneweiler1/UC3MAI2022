@@ -51,6 +51,7 @@ class TestGetProbabilities(TestCase):
         for row in my_matrix:
             print(row)
 
+
     def test_valid_case_extract_data(self):
         """this test checks if main function returns the correct data types"""
         my_data = extract(self.my_path, len(names_sem))
