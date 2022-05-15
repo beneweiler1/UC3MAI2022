@@ -168,23 +168,22 @@ def simulator(previousState, goalState):
     
     if light == 0: #north
         col = arrN[previousState+1]
-        for x in range(1,len(col)-1):
-           sum += col[x]
+        for x in range(0,len(col)-1):
+           sum += col[x+1]
            if sum >= r:
                simulator(x,goalState)
 
-
     elif light == 1: #east
         col = arrE[previousState+1]
-        for x in range(1,len(col)-1):
-            sum += col[x]
+        for x in range(0,len(col)-1):
+            sum += col[x+1]
             if sum >= r:
                simulator(x,goalState)
 
     else: #west
         col = arrW[previousState+1]  
-        for x in range(1,len(col)-1):
-            sum += col[x]
+        for x in range(0,len(col)-1):
+            sum += col[x+1]
             if sum >= r:
                simulator(x,goalState)   
 #print(pd.DataFrame(arrE))
